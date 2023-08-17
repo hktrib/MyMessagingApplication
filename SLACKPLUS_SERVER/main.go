@@ -10,12 +10,6 @@ type CustomError struct {
 	Message string
 }
 
-var user struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 func main() {
 	app := fiber.New(fiber.Config{
 		Prefork:       true,
@@ -27,21 +21,11 @@ func main() {
 	Auth.Auth(app)
 
 	// app.Post("/Register", func(c *fiber.Ctx) error {
-	// 	if c.Method() != fiber.MethodPost {
-	// 		c.Status(fiber.StatusMethodNotAllowed)
-	// 		return fiber.ErrNotAcceptable
-	// 	}
+	//
 
-	// 	if err := c.BodyParser(&user); err != nil {
-	// 		c.Status(fiber.StatusBadRequest)
-	// 		return fiber.ErrBadRequest
-	// 	}
-
-	// 	fmt.Println("Creating User:", user)
-
-	// 	c.JSON(user)
+	// app.Get("/", func(c *fiber.Ctx) error {
+	// 	return c.SendString("Hare Krsna....Aksara Nitai Dasa speaking here.")
 	// })
-
-	app.Listen(":5173")
+	app.Listen(":8080")
 
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { useRef, useState, useEffect } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
@@ -6,13 +5,18 @@ import InfoIcon from '@mui/icons-material/Info';
 import * as React from 'react';
 import '../styles/Register.scss'
 import { useNavigate } from "react-router-dom";
-import { Link, useLocation } from "react-router-dom";
+import axios from 'axios';
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-const REGISTER_URL = '/register';
 
+
+interface UserResponse {
+    username: string;
+    emailAddress: string;
+    password: string;
+}
 
 const Register = () => {
 
@@ -68,23 +72,60 @@ const Register = () => {
         setErrMsg('');
     }, [user, pwd, matchPwd])
 
-    const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        // if button enabled with JS hack
-        const v1 = USER_REGEX.test(user);
-        const v2 = PWD_REGEX.test(pwd);
-        // const v3 = EMAIL_REGEX.test(email)
-        if (!v1 || !v2 || !v3) {
-            setErrMsg("Invalid Entry");
-            return;
-        }
-        else {
-            setSuccess(true)
-        }
+
+    const options = {
+		method: 'POST',
+		url: 'https://localhost',
+		params: { category: 'all', count: '2' },
+		headers: {
+			'X-RapidAPI-Key': 'your-rapid-key',
+			'X-RapidAPI-Host': 'famous-quotes4.p.rapidapi.com',
+        },
     }
 
-    console.log(matchPwd)
-    console.log(user)
+    // const printToConsoleSuccess = (e : React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault()
+    //     console.log("Submit Button Clicked")
+    // }
+
+
+        
+    const handleSubmit = (e : React.FormEvent<HTMLFormElement>) : void => {
+        e.preventDefault()
+        console.log("Submit Button Clicked")
+        const v1 = USER_REGEX.test(user);
+        const v2 = PWD_REGEX.test(pwd);
+        const v3 = EMAIL_REGEX.test(email)
+        if (!v1 || !v2 || !v3) {
+            setErrMsg("Invalid Entry");
+        }
+        else {
+            console.log("Reached Else")
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                }
+            }
+            axios.post<UserResponse>('http:://localhost:8080/Register', 
+                JSON.stringify({username : user, emailAddress: email, password: pwd}), config)
+                .then(res => {
+                    console.log("Post Request Sent....got back response");
+                    console.log(JSON.stringify(res.data));
+
+                    //clear state and controlled inputs
+                    setSuccess(true);
+                    setUser('');
+                    setPwd('');
+                    setMatchPwd('');
+                    return 1;
+                })
+                .catch(error => {
+                    console.log("ERROR",error)
+                    return 0;
+                });
+        }
+    }
 
     return (
         <div className="register">
@@ -93,7 +134,7 @@ const Register = () => {
                     <h1>Success!</h1>
                     <p>
                         <button className="link__button">
-                            <a href="#" onClick={handleNavigation} >Sign In</a>
+                            <a href="#" >Sign In</a>
                         </button>
                     </p>
                 </section>
