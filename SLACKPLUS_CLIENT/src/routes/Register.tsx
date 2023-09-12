@@ -7,12 +7,13 @@ import '../styles/Register.scss'
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
+const NAME_REGEX = /.+/;
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 
-interface UserResponse {
+interface UserRequest {
     username: string;
     emailAddress: string;
     password: string;
@@ -20,12 +21,22 @@ interface UserResponse {
 
 const Register = () => {
 
+    const temp = true
     const userRef = useRef<HTMLInputElement>(null);
     const errRef = useRef<HTMLParagraphElement>(null);
 
-    const [user, setUser] = useState('');
-    const [validName, setValidName] = useState(false);
-    const [userFocus, setUserFocus] = useState(false);
+    const [username, setUsername] = useState('');
+    const [validUsername, setValidUsername] = useState(false);
+    const [usernameFocus, setUsernameFocus] = useState(false);
+
+
+    const [firstName, setFirstName] = useState('');
+    const [validFirstName, setValidFirstName] = useState(false);
+    const [firstNameFocus, setFirstNameFocus] = useState(false);
+
+    const [lastName, setLastName] = useState('');
+    const [validLastName, setValidLastName] = useState(false);
+    const [lastNameFocus, setLastNameFocus] = useState(false);
 
     const [email, setEmail] = useState('');
     const [validEmail, setValidEmail] = useState(false);
@@ -42,21 +53,22 @@ const Register = () => {
     const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
 
-
-    const navigate = useNavigate();
-
-    const handleNavigation = () => {
-        navigate('/Login')
-    }
-
     useEffect(() => {
         if (userRef.current)
             userRef.current.focus();
     }, [])
 
     useEffect(() => {
-        setValidName(USER_REGEX.test(user));
-    }, [user])
+        setValidFirstName(NAME_REGEX.test(firstName))
+    }, [firstName])
+
+    useEffect(() => {
+        setValidLastName(NAME_REGEX.test(lastName))
+    }, [lastName])
+
+    useEffect(() => {
+        setValidUsername(USER_REGEX.test(username));
+    }, [username])
 
     useEffect(() => {
         setValidEmail(EMAIL_REGEX.test(email))
@@ -67,33 +79,14 @@ const Register = () => {
         setValidMatch(pwd === matchPwd);
     }, [pwd, matchPwd])
 
-    
     useEffect(() => {
         setErrMsg('');
-    }, [user, pwd, matchPwd])
+    }, [username, pwd, matchPwd])
 
-
-    const options = {
-		method: 'POST',
-		url: 'https://localhost',
-		params: { category: 'all', count: '2' },
-		headers: {
-			'X-RapidAPI-Key': 'your-rapid-key',
-			'X-RapidAPI-Host': 'famous-quotes4.p.rapidapi.com',
-        },
-    }
-
-    // const printToConsoleSuccess = (e : React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault()
-    //     console.log("Submit Button Clicked")
-    // }
-
-
-        
     const handleSubmit = (e : React.FormEvent<HTMLFormElement>) : void => {
         e.preventDefault()
         console.log("Submit Button Clicked")
-        const v1 = USER_REGEX.test(user);
+        const v1 = USER_REGEX.test(username);
         const v2 = PWD_REGEX.test(pwd);
         const v3 = EMAIL_REGEX.test(email)
         if (!v1 || !v2 || !v3) {
@@ -107,15 +100,15 @@ const Register = () => {
                     'Accept': 'application/json',
                 }
             }
-            axios.post<UserResponse>('http:://localhost:8080/Register', 
-                JSON.stringify({username : user, emailAddress: email, password: pwd}), config)
+            axios.post<UserRequest>('http://localhost:8080/register', 
+                JSON.stringify({username : username, emailAddress: email, password: pwd}), config)
                 .then(res => {
                     console.log("Post Request Sent....got back response");
                     console.log(JSON.stringify(res.data));
 
                     //clear state and controlled inputs
                     setSuccess(true);
-                    setUser('');
+                    setUsername('');
                     setPwd('');
                     setMatchPwd('');
                     return 1;
@@ -124,6 +117,18 @@ const Register = () => {
                     console.log("ERROR",error)
                     return 0;
                 });
+        }
+    }
+
+    const emptyString = (str : string) : boolean => {
+        console.log("validMatch: ", validMatch)
+        console.log("validPwd: ", validPwd)
+        console.log("validMatch: ", validMatch)
+        if (str == "") {
+            console.log("str: empty")
+            return false
+        } else {
+            return true
         }
     }
 
@@ -143,25 +148,72 @@ const Register = () => {
                     <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
                     <h1>Register</h1>
                     <form onSubmit={handleSubmit}>
+
+                        <label htmlFor="firstName">
+                            First Name:
+                            <CheckIcon className={validFirstName ? "valid" : "hide"} />
+                            <CloseIcon className={validFirstName || !validFirstName ? "hide" : "invalid"} />
+                        </label>
+                        <input
+                            type="text"
+                            id="firstName"
+                            ref={userRef}
+                            autoComplete="off"
+                            onChange={(e) => setFirstName(e.target.value)}
+                            value={firstName}
+                            required
+                            aria-invalid={validFirstName ? "false" : "true"}
+                            aria-describedby="uidnote"
+                            onFocus={() => setFirstNameFocus(true)}
+                            onBlur={() => setFirstNameFocus(false)}
+                        />
+                        <p id="uidnote" className={firstNameFocus && firstName && !validFirstName ? "instructions" : "offscreen"}>
+                            <InfoIcon/>
+                            Letters, numbers, underscores, hyphens allowed.
+                        </p>
+
+                        <label htmlFor="lastName">
+                            Last Name:
+                            <CheckIcon className={validLastName ? "valid" : "hide"} />
+                            <CloseIcon className={validLastName || !validLastName ? "hide" : "invalid"} />
+                        </label>
+                        <input
+                            type="text"
+                            id="firstName"
+                            ref={userRef}
+                            autoComplete="off"
+                            onChange={(e) => setLastName(e.target.value)}
+                            value={lastName}
+                            required
+                            aria-invalid={validLastName ? "false" : "true"}
+                            aria-describedby="uidnote"
+                            onFocus={() => setLastNameFocus(true)}
+                            onBlur={() => setLastNameFocus(false)}
+                        />
+                        <p id="uidnote" className={lastNameFocus && lastName && !validLastName ? "instructions" : "offscreen"}>
+                            <InfoIcon/>
+                            Letters, numbers, underscores, hyphens allowed.
+                        </p>
+
                         <label htmlFor="username">
                             Username:
-                            <CheckIcon className={validName ? "valid" : "hide"} />
-                            <CloseIcon className={validName || !user ? "hide" : "invalid"} />
+                            <CheckIcon className={validUsername ? "valid" : "hide"} />
+                            <CloseIcon className={validUsername || !validUsername ? "hide" : "invalid"} />
                         </label>
                         <input
                             type="text"
                             id="username"
                             ref={userRef}
                             autoComplete="off"
-                            onChange={(e) => setUser(e.target.value)}
-                            value={user}
+                            onChange={(e) => setUsername(e.target.value)}
+                            value={username}
                             required
-                            aria-invalid={validName ? "false" : "true"}
+                            aria-invalid={validUsername ? "false" : "true"}
                             aria-describedby="uidnote"
-                            onFocus={() => setUserFocus(true)}
-                            onBlur={() => setUserFocus(false)}
+                            onFocus={() => setUsernameFocus(true)}
+                            onBlur={() => setUsernameFocus(false)}
                         />
-                        <p id="uidnote" className={userFocus && user && !validName ? "instructions" : "offscreen"}>
+                        <p id="uidnote" className={usernameFocus && username && !validUsername ? "instructions" : "offscreen"}>
                             <InfoIcon/>
                             4 to 24 characters.<br />
                             Must begin with a letter.<br />
@@ -181,7 +233,7 @@ const Register = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             value={email}
                             required
-                            aria-invalid={validName ? "false" : "true"}
+                            aria-invalid={validUsername ? "false" : "true"}
                             aria-describedby="uidnote"
                             onFocus={() => setEmailFocus(true)}
                             onBlur={() => setEmailFocus(false)}
@@ -197,7 +249,7 @@ const Register = () => {
                         <label htmlFor="password">
                             Password:
                             <CheckIcon className={validPwd ? "valid" : "hide"} />
-                            <CloseIcon className={validPwd || !validName ? "hide" : "invalid"} />
+                            <CloseIcon className={validPwd || !validUsername ? "hide" : "invalid"} />
                         </label>
                         <input
                             type="password"
@@ -222,7 +274,8 @@ const Register = () => {
                         <label htmlFor="confirm_pwd">
                             Confirm Password:
                             <CheckIcon className={validMatch && validPwd ? "valid" : "hide"} />
-                            <CloseIcon className={validMatch && validPwd ? "hide" : "invalid"} />
+                            <CloseIcon className={(validMatch) || (!emptyString(matchPwd) && !emptyString(pwd)) ? "hide" : "invalid"} />
+                            {/* false false -> true and true */}
                         </label>
                         <input
                             type="password"
@@ -240,7 +293,7 @@ const Register = () => {
                             Must match the first password input field.
                         </p>
 
-                        <button disabled={!validName || !validPwd || !validMatch ? true : false}>Sign Up</button>
+                        <button disabled={!validUsername || !validPwd || !validMatch ? true : false}>Sign Up</button>
                     </form>
                     <p>
                         Already registered?<br />
