@@ -30,13 +30,13 @@ const Register = () => {
     const [usernameFocus, setUsernameFocus] = useState(false);
 
 
-    const [firstName, setFirstName] = useState('');
-    const [validFirstName, setValidFirstName] = useState(false);
-    const [firstNameFocus, setFirstNameFocus] = useState(false);
+    // const [firstName, setFirstName] = useState('');
+    // const [validFirstName, setValidFirstName] = useState(false);
+    // const [firstNameFocus, setFirstNameFocus] = useState(false);
 
-    const [lastName, setLastName] = useState('');
-    const [validLastName, setValidLastName] = useState(false);
-    const [lastNameFocus, setLastNameFocus] = useState(false);
+    // const [lastName, setLastName] = useState('');
+    // const [validLastName, setValidLastName] = useState(false);
+    // const [lastNameFocus, setLastNameFocus] = useState(false);
 
     const [email, setEmail] = useState('');
     const [validEmail, setValidEmail] = useState(false);
@@ -58,13 +58,13 @@ const Register = () => {
             userRef.current.focus();
     }, [])
 
-    useEffect(() => {
-        setValidFirstName(NAME_REGEX.test(firstName))
-    }, [firstName])
+    // useEffect(() => {
+    //     setValidFirstName(NAME_REGEX.test(firstName))
+    // }, [firstName])
 
-    useEffect(() => {
-        setValidLastName(NAME_REGEX.test(lastName))
-    }, [lastName])
+    // useEffect(() => {
+    //     setValidLastName(NAME_REGEX.test(lastName))
+    // }, [lastName])
 
     useEffect(() => {
         setValidUsername(USER_REGEX.test(username));
@@ -149,7 +149,7 @@ const Register = () => {
                     <h1>Register</h1>
                     <form onSubmit={handleSubmit}>
 
-                        <label htmlFor="firstName">
+                        {/* <label htmlFor="firstName">
                             First Name:
                             <CheckIcon className={validFirstName ? "valid" : "hide"} />
                             <CloseIcon className={validFirstName || !validFirstName ? "hide" : "invalid"} />
@@ -193,7 +193,7 @@ const Register = () => {
                         <p id="uidnote" className={lastNameFocus && lastName && !validLastName ? "instructions" : "offscreen"}>
                             <InfoIcon/>
                             Letters, numbers, underscores, hyphens allowed.
-                        </p>
+                        </p> */}
 
                         <label htmlFor="username">
                             Username:

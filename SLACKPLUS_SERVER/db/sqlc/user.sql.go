@@ -9,23 +9,27 @@ import (
 	"context"
 )
 
-const createUser = `-- name: createUser :one
+const createUser = `-- name: CreateUser :one
 INSERT into users (
     username, 
     hashed_password, 
-    full_name, 
     email
-) VALUES ( ?1, ?2, ?3, ?4
-) RETURNING username, hashed_password, full_name, email, password_changed_at, created_at, is_email_verified
+) VALUES ( $1, $2, $3
+) RETURNING username, hashed_password, email, password_changed_at, created_at, is_email_verified
 `
 
-func (q *Queries) createUser(ctx context.Context) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser)
+type CreateUserParams struct {
+	Username       string `json:"username"`
+	HashedPassword string `json:"hashed_password"`
+	Email          string `json:"email"`
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUser, arg.Username, arg.HashedPassword, arg.Email)
 	var i User
 	err := row.Scan(
 		&i.Username,
 		&i.HashedPassword,
-		&i.FullName,
 		&i.Email,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,

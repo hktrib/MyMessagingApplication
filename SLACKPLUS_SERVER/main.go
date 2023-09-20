@@ -3,29 +3,37 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"os"
+	"log"
 
 	_ "github.com/lib/pq"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/hktrib/SlackPlus/initializers"
-	Auth "github.com/hktrib/SlackPlus/routes"
+	db "github.com/hktrib/SlackPlus/db/sqlc"
+	Handler "github.com/hktrib/SlackPlus/routes"
+	"github.com/hktrib/SlackPlus/util"
 )
 
-func init() {
-	initializers.LoadEnvVariables()
+func setupRoutes(app *fiber.App, handlers *Handler.Handlers) {
+
+	app.Post("/register", handlers.RegisterHandler)
+
 }
 
 func main() {
 
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("HOST"), os.Getenv("DP_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
-	db, err := sql.Open("postgres", connStr)
-
+	config, err := util.LoadConfig(".")
 	if err != nil {
-		panic(err.Error())
+		log.Fatal("cannot load config:", err)
 	}
-	defer db.Close()
+
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
+	if err != nil {
+		log.Fatal("cannot connect to db:", err)
+	}
+
+	store := db.NewStore(conn)
+	handlers := Handler.NewHandlers(store)
 
 	app := fiber.New(fiber.Config{
 		Prefork:       true,
@@ -35,18 +43,8 @@ func main() {
 	})
 	app.Use(cors.New())
 
-	Auth.Auth(app, db)
+	setupRoutes(app, handlers)
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-
-	// app.Post("/Register", func(c *fiber.Ctx) error {
-	//
-
-	// app.Get("/", func(c *fiber.Ctx) error {
-	// 	return c.SendString("Hare Krsna....Aksara Nitai Dasa speaking here.")
-	// // })
-	app.Listen(fmt.Sprintf(":%s", os.Getenv("SERVER_PORT")))
+	app.Listen(fmt.Sprintf(":%s", config.ServerAddress))
 
 }

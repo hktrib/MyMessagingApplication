@@ -1,15 +1,14 @@
 -- SQL dump generated using DBML (dbml-lang.org)
 -- Database: PostgreSQL
--- Generated at: 2023-09-13T20:44:28.166Z
+-- Generated at: 2023-09-20T02:26:20.973Z
 
 CREATE TABLE "users" (
   "username" varchar PRIMARY KEY,
   "hashed_password" varchar NOT NULL,
-  "full_name" varchar NOT NULL,
   "email" varchar UNIQUE NOT NULL,
-  "is_email_verified" bool NOT NULL DEFAULT false
   "password_changed_at" timestamptz NOT NULL DEFAULT '0001-01-01',
   "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "is_email_verified" bool NOT NULL DEFAULT false
 );
 
 CREATE TABLE "verify_emails" (
