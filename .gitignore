@@ -1,2 +1,2 @@
-.env
+SLACKPLUS_SERVER/*.env
 .log
