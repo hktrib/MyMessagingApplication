@@ -10,11 +10,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	db "github.com/hktrib/SlackPlus/db/sqlc"
-	Handler "github.com/hktrib/SlackPlus/routes"
+	handler "github.com/hktrib/SlackPlus/routes"
 	"github.com/hktrib/SlackPlus/util"
 )
 
-func setupRoutes(app *fiber.App, handlers *Handler.Handlers) {
+func setupRoutes(app *fiber.App, handlers *handler.Handlers) {
 
 	app.Post("/register", handlers.RegisterHandler)
 
@@ -33,7 +33,7 @@ func main() {
 	}
 
 	store := db.NewStore(conn)
-	handlers := Handler.NewHandlers(store)
+	handlers := handler.NewHandlers(store)
 
 	app := fiber.New(fiber.Config{
 		Prefork:       true,

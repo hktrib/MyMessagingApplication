@@ -1,4 +1,4 @@
-package Handler
+package handler
 
 import (
 	"crypto/sha256"
@@ -40,20 +40,18 @@ func (h *Handlers) RegisterHandler(c *fiber.Ctx) error {
 	}
 
 	encrypter := sha256.New()
-
 	encrypter.Write([]byte(userReq.Password))
-
 	encryptedBS := encrypter.Sum(nil)
 
-	user, err := h.Store.CreateUser(c.Context(), db.CreateUserParams{userReq.Username, fmt.Sprintf("%x", encryptedBS), userReq.Email})
+	userReq.Password = fmt.Sprintf("%x", encryptedBS)
 
-	fmt.Println(fmt.Sprintf("%x", encryptedBS))
-
+	user, err := h.Store.CreateUser(c.Context(), db.CreateUserParams{userReq.Username, userReq.Password, userReq.Email})
 	if err != nil {
 		return fiber.ErrInternalServerError
 	}
 
-	fmt.Println("Creating User:", user)
+	fmt.Println("Created User:", user)
+
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "User Created Successfully",
 	})
