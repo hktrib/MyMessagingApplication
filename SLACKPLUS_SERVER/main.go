@@ -16,7 +16,8 @@ import (
 
 func setupRoutes(app *fiber.App, handlers *handler.Handlers) {
 
-	app.Post("/register", handlers.RegisterHandler)
+	app.Post("/register", handlers.RegisterUser)
+	app.Get("/register", handlers.PriorRegistrationCheck)
 
 }
 
@@ -33,7 +34,7 @@ func main() {
 	}
 
 	store := db.NewStore(conn)
-	handlers := handler.NewHandlers(store)
+	handlers := handler.NewHandlers(store, &config)
 
 	app := fiber.New(fiber.Config{
 		Prefork:       true,

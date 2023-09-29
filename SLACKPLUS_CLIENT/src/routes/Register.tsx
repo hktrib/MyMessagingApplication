@@ -5,7 +5,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import * as React from 'react';
 import '../styles/Register.scss'
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const NAME_REGEX = /.+/;
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
@@ -19,12 +19,22 @@ interface UserRequest {
     password: string;
 }
 
+interface AvailableUsername {
+    isAvailable : boolean
+}
+interface EmailAlreadyUsed {
+    isUsed : boolean
+}
+
+
 const Register = () => {
 
-    const temp = true
+    
     const userRef = useRef<HTMLInputElement>(null);
     const errRef = useRef<HTMLParagraphElement>(null);
 
+
+    const [backendMessage, setBackendMessage] = useState('')
     const [username, setUsername] = useState('');
     const [validUsername, setValidUsername] = useState(false);
     const [usernameFocus, setUsernameFocus] = useState(false);
@@ -57,21 +67,20 @@ const Register = () => {
         if (userRef.current)
             userRef.current.focus();
     }, [])
-
-    // useEffect(() => {
-    //     setValidFirstName(NAME_REGEX.test(firstName))
-    // }, [firstName])
-
-    // useEffect(() => {
-    //     setValidLastName(NAME_REGEX.test(lastName))
-    // }, [lastName])
-
     useEffect(() => {
-        setValidUsername(USER_REGEX.test(username));
+        const valid = USER_REGEX.test(username)
+        // if (valid === true) {
+        //     valid = availableUsername(username)
+        // }
+        setValidUsername(valid);
     }, [username])
 
     useEffect(() => {
-        setValidEmail(EMAIL_REGEX.test(email))
+        const valid = EMAIL_REGEX.test(email)
+        // if (valid === true) {
+        //     valid = emailUsed(email)
+        // }
+        setValidEmail(valid);
     }, [email])
 
     useEffect(() => {
@@ -82,6 +91,48 @@ const Register = () => {
     useEffect(() => {
         setErrMsg('');
     }, [username, pwd, matchPwd])
+
+
+    const availableUsername = (username: string) : boolean => {
+        console.log(username)
+        axios.get(`http://localhost:8080/register?username=${username}`)
+        .then((res : AxiosResponse<AvailableUsername>) => {
+            const availUser : AvailableUsername = res.data;
+            console.log("username -> entered .then")
+            console.log(availUser)
+            if (availUser.isAvailable == true) {
+                setBackendMessage('')
+                return true
+            }
+        })
+        .catch((error: AxiosError<string>) => {
+            // Handle error here
+            console.error('An error occurred:', error.message);
+        }); 
+        
+        setBackendMessage("Error: Username is not Available!!!")
+        return false
+    }
+    const emailUsed = (email: string) : boolean => {
+        
+        axios.get(`http://localhost:8080/register?email=${email}`)
+        .then((res : AxiosResponse<EmailAlreadyUsed>) => {
+            const emailUsed : EmailAlreadyUsed = res.data
+            console.log("email -> entered .then");
+            console.log(emailUsed)
+            if (emailUsed.isUsed == true) {
+                setBackendMessage('')
+                return true
+            }
+        })
+        .catch((error: AxiosError<string>) => {
+            // Handle error here
+            console.error('An error occurred:', error.message);
+        }); 
+        
+        setBackendMessage("Error: Email is already Registered....try Signing In instead!!!")
+        return false
+    }
 
     const handleSubmit = (e : React.FormEvent<HTMLFormElement>) : void => {
         e.preventDefault()
@@ -148,53 +199,6 @@ const Register = () => {
                     <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
                     <h1>Register</h1>
                     <form onSubmit={handleSubmit}>
-
-                        {/* <label htmlFor="firstName">
-                            First Name:
-                            <CheckIcon className={validFirstName ? "valid" : "hide"} />
-                            <CloseIcon className={validFirstName || !validFirstName ? "hide" : "invalid"} />
-                        </label>
-                        <input
-                            type="text"
-                            id="firstName"
-                            ref={userRef}
-                            autoComplete="off"
-                            onChange={(e) => setFirstName(e.target.value)}
-                            value={firstName}
-                            required
-                            aria-invalid={validFirstName ? "false" : "true"}
-                            aria-describedby="uidnote"
-                            onFocus={() => setFirstNameFocus(true)}
-                            onBlur={() => setFirstNameFocus(false)}
-                        />
-                        <p id="uidnote" className={firstNameFocus && firstName && !validFirstName ? "instructions" : "offscreen"}>
-                            <InfoIcon/>
-                            Letters, numbers, underscores, hyphens allowed.
-                        </p>
-
-                        <label htmlFor="lastName">
-                            Last Name:
-                            <CheckIcon className={validLastName ? "valid" : "hide"} />
-                            <CloseIcon className={validLastName || !validLastName ? "hide" : "invalid"} />
-                        </label>
-                        <input
-                            type="text"
-                            id="firstName"
-                            ref={userRef}
-                            autoComplete="off"
-                            onChange={(e) => setLastName(e.target.value)}
-                            value={lastName}
-                            required
-                            aria-invalid={validLastName ? "false" : "true"}
-                            aria-describedby="uidnote"
-                            onFocus={() => setLastNameFocus(true)}
-                            onBlur={() => setLastNameFocus(false)}
-                        />
-                        <p id="uidnote" className={lastNameFocus && lastName && !validLastName ? "instructions" : "offscreen"}>
-                            <InfoIcon/>
-                            Letters, numbers, underscores, hyphens allowed.
-                        </p> */}
-
                         <label htmlFor="username">
                             Username:
                             <CheckIcon className={validUsername ? "valid" : "hide"} />
@@ -302,6 +306,11 @@ const Register = () => {
                             <a href="#">Sign In</a>
                         </span>
                     </p>
+                        {backendMessage != '' ? (
+                            <div className="backendMessage">
+                                <p>{backendMessage}</p>
+                            </div>  
+                        ) : null}
                 </section>
             )}
         </div>
