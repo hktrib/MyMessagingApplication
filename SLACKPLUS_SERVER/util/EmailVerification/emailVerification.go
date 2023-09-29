@@ -15,7 +15,11 @@ func SendMail(config *util.Config, recipientEmailAddress *string) {
 		"smtp.gmail.com",
 	)
 
-	msg := "Subject: Hare Krsna Email\nEmail Body Woohooo"
+	// subject := "Subject: Hare Krsna Email"
+	// link := "<a href=\"" + verificationLink + "\">Click here to verify</a>"
+	// msg := subject + "\n\nPlease " + link
+
+	msg := "Subject: Hare Krsna Email\n Please click on verification link"
 
 	var recipientEa []string
 	recipientEa = append(recipientEa, *recipientEmailAddress)
