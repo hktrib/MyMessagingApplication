@@ -7,6 +7,9 @@ createdb:
 dropdb:
 	docker exec -it postgres15 dropdb my_messaging_app
 
+dbschema:
+	dbml2sql --postgres -o doc/schema.sql doc/db.dbml
+
 migrateup:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/my_messaging_app?sslmode=disable" -verbose up
 

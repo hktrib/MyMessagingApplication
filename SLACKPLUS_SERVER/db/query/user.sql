@@ -5,8 +5,15 @@ INSERT into users (
     username, 
     hashed_password, 
     email
-) VALUES ( $1, $2, $3
-) RETURNING *;
+) VALUES ($1, $2, $3) RETURNING *;
+
+
+-- name: CreateVerifyEmailsRecord :one
+INSERT into verify_emails (
+    username,
+    email, 
+    secret_code
+) VALUES ($1, $2, $3) RETURNING *;
 
 -- name: SearchUserByEmail :one
 SELECT EXISTS (SELECT 1 FROM users WHERE email = $1) AS email_exists;

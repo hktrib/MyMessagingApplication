@@ -140,8 +140,16 @@ func (h *Handlers) RegisterUser(c *fiber.Ctx) error {
 		return fiber.ErrInternalServerError
 	}
 
-	// Send verification email
+	// Creating Verification Email record in database
+	ve_record, err := h.Store.CreateVerifyEmailsRecord(c.Context(), db.CreateVerifyEmailsRecordParams{user.Username, user.Email, util.RandomString()})
+	if err != nil {
+		return fiber.ErrInternalServerError
+	}
+
 	fmt.Println("Created User:", user)
+	fmt.Println("Created VE_Record", ve_record)
+
+	// Send verification email using SMTP
 	emailverification.SendMail(h.Config, &user.Email)
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{

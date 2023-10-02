@@ -14,8 +14,7 @@ INSERT into users (
     username, 
     hashed_password, 
     email
-) VALUES ( $1, $2, $3
-) RETURNING username, hashed_password, email, password_changed_at, created_at, is_email_verified
+) VALUES ($1, $2, $3) RETURNING username, hashed_password, email, password_changed_at, created_at, is_email_verified
 `
 
 type CreateUserParams struct {
@@ -34,6 +33,35 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 		&i.IsEmailVerified,
+	)
+	return i, err
+}
+
+const createVerifyEmailsRecord = `-- name: CreateVerifyEmailsRecord :one
+INSERT into verify_emails (
+    username,
+    email, 
+    secret_code
+) VALUES ($1, $2, $3) RETURNING id, username, email, secret_code, is_used, created_at, expired_at
+`
+
+type CreateVerifyEmailsRecordParams struct {
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	SecretCode string `json:"secret_code"`
+}
+
+func (q *Queries) CreateVerifyEmailsRecord(ctx context.Context, arg CreateVerifyEmailsRecordParams) (VerifyEmail, error) {
+	row := q.db.QueryRowContext(ctx, createVerifyEmailsRecord, arg.Username, arg.Email, arg.SecretCode)
+	var i VerifyEmail
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.SecretCode,
+		&i.IsUsed,
+		&i.CreatedAt,
+		&i.ExpiredAt,
 	)
 	return i, err
 }

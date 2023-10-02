@@ -1,0 +1,27 @@
+2023-10-01T20:49:00.951Z
+SyntaxError: You have a syntax error at "db.dbml" line 24 column 10. Expected " " but ":" found.
+    at /usr/local/lib/node_modules/@dbml/cli/lib/cli/utils.js:45:13
+    at Array.forEach (<anonymous>)
+    at generate (/usr/local/lib/node_modules/@dbml/cli/lib/cli/utils.js:39:14)
+    at exportHandler (/usr/local/lib/node_modules/@dbml/cli/lib/cli/export.js:28:27)
+    at Object.dbml2sql (/usr/local/lib/node_modules/@dbml/cli/lib/cli/index.js:19:23)
+    at Object.<anonymous> (/usr/local/lib/node_modules/@dbml/cli/bin/dbml2sql.js:4:19)
+    at Module._compile (node:internal/modules/cjs/loader:1159:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1213:10)
+    at Module.load (node:internal/modules/cjs/loader:1037:32)
+    at Module._load (node:internal/modules/cjs/loader:878:12)
+
+ROOT_ERROR:
+SyntaxError: Expected " " but ":" found.
+    at peg$buildStructuredError (/usr/local/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/parse/dbmlParser.js:1091:12)
+    at Object.peg$parse [as parse] (/usr/local/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/parse/dbmlParser.js:6866:11)
+    at Function.parseDBMLToJSON (/usr/local/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/parse/Parser.js:49:37)
+    at Function.parse (/usr/local/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/parse/Parser.js:76:32)
+    at Object._export [as export] (/usr/local/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/export/index.js:11:37)
+    at /usr/local/lib/node_modules/@dbml/cli/lib/cli/export.js:28:69
+    at /usr/local/lib/node_modules/@dbml/cli/lib/cli/utils.js:42:23
+    at Array.forEach (<anonymous>)
+    at generate (/usr/local/lib/node_modules/@dbml/cli/lib/cli/utils.js:39:14)
+    at exportHandler (/usr/local/lib/node_modules/@dbml/cli/lib/cli/export.js:28:27)
+{"start":{"offset":903,"line":24,"column":10},"end":{"offset":904,"line":24,"column":11}}
+

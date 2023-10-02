@@ -4,21 +4,31 @@ Project MyMessagingApp {
 
 
 Table users as U {
-    username                varchar     [pk]
+    username                varchar    
     hashed_password         varchar     [not null]
     email                   varchar     [unique, not null]
     password_changed_at     timestamptz [not null, default: '0001-01-01']
     created_at              timestamptz [not null, default: `now()`]
     is_email_verified       bool        [not null, default: false]
+
+    indexes {
+        username [pk]
+    }
 }
 
 Table verify_emails as VE {
-    id bigserial                    [pk]
+    id bigserial                   
     username            varchar     [not null, ref: > U.username]
     email               varchar     [not null]
     secret_code         varchar     [not null]
     is_used             bool        [not null, default: false]
     created_at          timestamptz [not null, default: `now()`]
     expired_at          timestamptz [not null, default: `now() + interval '5 minutes'`]
+
+    indexes{
+        id          [pk]
+        username 
+        email
+    } 
 }
 
