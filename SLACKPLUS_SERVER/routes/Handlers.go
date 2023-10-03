@@ -150,7 +150,7 @@ func (h *Handlers) RegisterUser(c *fiber.Ctx) error {
 	fmt.Println("Created VE_Record", ve_record)
 
 	// Send verification email using SMTP
-	emailverification.SendMail(h.Config, &user.Email)
+	emailverification.SendMail(h.Config, &user.Email, &ve_record.Username, &ve_record.SecretCode)
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "User Created Successfully",
