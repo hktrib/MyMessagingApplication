@@ -1,0 +1,44 @@
+body {
+
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 50vh; /* Make sure the body takes up the full viewport height */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    
+    .VerifyEmail {
+        text-align: center; /* Center the content inside the div horizontally */
+        // background-color: #f0f0f0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border: 1px solid #ccc;
+        min-height: 150px;
+        .Verify-Button {
+            font-family: 'Montserrat', sans-serif;
+            width: 100px;
+            background-color: rgb(18, 27, 65);
+            padding-left: 1.5rem;
+            padding-right: 1.5rem; 
+            padding-bottom: 0.5rem; 
+            padding-top: 0.625rem; 
+            border-radius: 0.25rem; 
+            font-size: 0.75rem;
+            line-height: 1rem; 
+            font-weight: 600; 
+            line-height: 1.5; 
+            color: #ffffff; 
+            text-transform: uppercase; 
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms; 
+            transition-duration: 150ms; 
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    }
+
+}

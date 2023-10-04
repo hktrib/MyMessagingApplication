@@ -8,7 +8,7 @@ import './styles/index.scss'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from './routes/Home.tsx'
 import Login from './routes/Login.tsx'
-import VerifyEmail from './routes/VerifyEmail.tsx'
+import VerifyUser from './routes/VerifyUser.tsx'
 
 const router = createBrowserRouter([
   {
@@ -37,8 +37,8 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage/>
   },
   {
-    path: "/verifyEmail",
-    element: <VerifyEmail/>,
+    path: "/verifyUser",
+    element: <VerifyUser/>,
     errorElement: <ErrorPage/>
   },
 ]);

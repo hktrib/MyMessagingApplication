@@ -5,7 +5,7 @@ import (
 	"net/smtp"
 	"strings"
 
-	"github.com/hktrib/SlackPlus/util"
+	"github.com/hktrib/MyMessagingApplication/util"
 )
 
 type Mail struct {

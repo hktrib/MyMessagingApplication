@@ -1,0 +1,14 @@
+/* loading.css */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    // height: 10vh;
+    height: 10px;
+    background-color: rgba(199, 28, 28, 0.5); /* Semi-transparent background */
+    .loading img {
+        color: blue;
+        width: 10%; /* Adjust the size as needed */
+    }
+}
+

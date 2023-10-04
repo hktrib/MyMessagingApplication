@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	db "github.com/hktrib/SlackPlus/db/sqlc"
-	"github.com/hktrib/SlackPlus/util"
-	emailverification "github.com/hktrib/SlackPlus/util/EmailVerification"
+	db "github.com/hktrib/MyMessagingApplication/db/sqlc"
+	"github.com/hktrib/MyMessagingApplication/util"
+	emailverification "github.com/hktrib/MyMessagingApplication/util/EmailVerification"
 )
 
 type Handlers struct {

@@ -9,9 +9,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	db "github.com/hktrib/SlackPlus/db/sqlc"
-	handler "github.com/hktrib/SlackPlus/routes"
-	"github.com/hktrib/SlackPlus/util"
+	db "github.com/hktrib/MyMessagingApplication/db/sqlc"
+	handler "github.com/hktrib/MyMessagingApplication/routes"
+	"github.com/hktrib/MyMessagingApplication/util"
 )
 
 func setupRoutes(app *fiber.App, handlers *handler.Handlers) {

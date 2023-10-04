@@ -1,4 +1,4 @@
-module github.com/hktrib/SlackPlus
+module github.com/hktrib/MyMessagingApplication
 
 go 1.20
 
