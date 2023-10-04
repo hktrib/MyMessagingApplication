@@ -24,7 +24,7 @@ func SendMail(config *util.Config, recipientEmailAddress *string,
 		"smtp.gmail.com",
 	)
 
-	verificationLink := fmt.Sprintf("http://localhost:5173/verifyEmail?username=%v&secretcode=%v", *username, *secretCode)
+	verificationLink := fmt.Sprintf("http://localhost:5173/verifyUser?username=%v&secret_code=%v", *username, *secretCode)
 
 	subject := fmt.Sprintf("Subject: My-Messaging-App: ||Account Verification Email for User: %v ||", *username)
 	link := "<a href=\"" + verificationLink + "\">Click here to verify</a>"
