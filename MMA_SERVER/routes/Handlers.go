@@ -28,6 +28,11 @@ type User struct {
 	Password string `json:"password"`
 }
 
+type RegistrationVerification struct {
+	Username   string `json:"username"`
+	SecretCode string `json:"secret_code"`
+}
+
 // PriorRegistrationCheck -> returns Error
 // Purpose: For live checks of whether a username is valid
 // Status: Under development
@@ -78,6 +83,43 @@ func (h *Handlers) PriorRegistrationCheck(c *fiber.Ctx) error {
 	fmt.Printf("Error: Misdirected Get Request.....Elapsed: %v\n", end.Sub(start))
 	return c.Status(fiber.StatusMisdirectedRequest).JSON(fiber.Map{
 		"message": "Error: Misdirected Get Request",
+	})
+}
+
+func (h *Handlers) VerifyUser(c *fiber.Ctx) error {
+	fmt.Println("Entered Put method")
+	userToVerify := RegistrationVerification{}
+
+	if c.Method() != fiber.MethodPut {
+		c.Status(fiber.StatusMethodNotAllowed)
+		return fiber.ErrNotAcceptable
+	}
+
+	if err := c.BodyParser(&userToVerify); err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return fiber.ErrBadRequest
+	}
+
+	uve_params := db.UpdateVerifyEmailParams{
+		Username:   userToVerify.Username,
+		SecretCode: userToVerify.SecretCode,
+	}
+	verifyUsers_entry, err := h.Store.UpdateVerifyEmail(c.Context(), uve_params)
+	if err != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	uu_params := db.UpdateUserParams{
+		Username: verifyUsers_entry.Username,
+	}
+	updatedUser, err := h.Store.UpdateUser(c.Context(), uu_params)
+	if err != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	fmt.Println(updatedUser)
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "User updated successfully",
 	})
 }
 

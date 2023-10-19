@@ -18,6 +18,7 @@ func setupRoutes(app *fiber.App, handlers *handler.Handlers) {
 
 	app.Post("/register", handlers.RegisterUser)
 	app.Get("/register", handlers.PriorRegistrationCheck)
+	app.Put("/verifyUser", handlers.VerifyUser)
 
 }
 

@@ -1,6 +1,6 @@
 -- SQL dump generated using DBML (dbml-lang.org)
 -- Database: PostgreSQL
--- Generated at: 2023-10-01T21:07:33.390Z
+-- Generated at: 2023-10-10T02:25:40.256Z
 
 CREATE TABLE "users" (
   "username" varchar,
@@ -26,5 +26,7 @@ CREATE TABLE "verify_emails" (
 CREATE INDEX ON "verify_emails" ("username");
 
 CREATE INDEX ON "verify_emails" ("email");
+
+CREATE INDEX ON "verify_emails" ("secret_code");
 
 ALTER TABLE "verify_emails" ADD FOREIGN KEY ("username") REFERENCES "users" ("username");

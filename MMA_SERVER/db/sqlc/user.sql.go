@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -66,6 +67,30 @@ func (q *Queries) CreateVerifyEmailsRecord(ctx context.Context, arg CreateVerify
 	return i, err
 }
 
+const searchRecordToVerify = `-- name: SearchRecordToVerify :one
+SELECT id, username, email, secret_code, is_used, created_at, expired_at FROM verify_emails WHERE (username = $1 AND secret_code = $2)
+`
+
+type SearchRecordToVerifyParams struct {
+	Username   string `json:"username"`
+	SecretCode string `json:"secret_code"`
+}
+
+func (q *Queries) SearchRecordToVerify(ctx context.Context, arg SearchRecordToVerifyParams) (VerifyEmail, error) {
+	row := q.db.QueryRowContext(ctx, searchRecordToVerify, arg.Username, arg.SecretCode)
+	var i VerifyEmail
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.SecretCode,
+		&i.IsUsed,
+		&i.CreatedAt,
+		&i.ExpiredAt,
+	)
+	return i, err
+}
+
 const searchUserByEmail = `-- name: SearchUserByEmail :one
 SELECT EXISTS (SELECT 1 FROM users WHERE email = $1) AS email_exists
 `
@@ -86,4 +111,75 @@ func (q *Queries) SearchUserByUsername(ctx context.Context, username string) (bo
 	var username_exists bool
 	err := row.Scan(&username_exists)
 	return username_exists, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+UPDATE users
+SET 
+    hashed_password = COALESCE($1, hashed_password),
+    email = COALESCE($2, email),
+    password_changed_at = COALESCE($3, password_changed_at),
+    is_email_verified = COALESCE($4, is_email_verified)
+WHERE
+    username = $5
+RETURNING username, hashed_password, email, password_changed_at, created_at, is_email_verified
+`
+
+type UpdateUserParams struct {
+	HashedPassword    sql.NullString `json:"hashed_password"`
+	Email             sql.NullString `json:"email"`
+	PasswordChangedAt sql.NullTime   `json:"password_changed_at"`
+	IsEmailVerified   sql.NullBool   `json:"is_email_verified"`
+	Username          string         `json:"username"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUser,
+		arg.HashedPassword,
+		arg.Email,
+		arg.PasswordChangedAt,
+		arg.IsEmailVerified,
+		arg.Username,
+	)
+	var i User
+	err := row.Scan(
+		&i.Username,
+		&i.HashedPassword,
+		&i.Email,
+		&i.PasswordChangedAt,
+		&i.CreatedAt,
+		&i.IsEmailVerified,
+	)
+	return i, err
+}
+
+const updateVerifyEmail = `-- name: UpdateVerifyEmail :one
+UPDATE verify_emails
+SET
+    is_used = TRUE
+WHERE
+    username = $1
+    AND secret_code = $2
+    AND is_used = FALSE
+RETURNING id, username, email, secret_code, is_used, created_at, expired_at
+`
+
+type UpdateVerifyEmailParams struct {
+	Username   string `json:"username"`
+	SecretCode string `json:"secret_code"`
+}
+
+func (q *Queries) UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error) {
+	row := q.db.QueryRowContext(ctx, updateVerifyEmail, arg.Username, arg.SecretCode)
+	var i VerifyEmail
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.SecretCode,
+		&i.IsUsed,
+		&i.CreatedAt,
+		&i.ExpiredAt,
+	)
+	return i, err
 }

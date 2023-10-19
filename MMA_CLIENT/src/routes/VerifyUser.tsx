@@ -16,7 +16,7 @@ import '../styles/VerifyEmail.scss'
 
 interface VerifyUserReq {
     username: string,
-    secretcode: string
+    secret_code: string
 }
 
 interface Error {
@@ -31,52 +31,49 @@ const VerifyUser = () => {
     const timer = React.useRef<number>();
 
     const buttonSx = {
-    ...(success && {
-        bgcolor: green[500],
-        '&:hover': {
-        bgcolor: green[700],
-        },
-    }),
+      ...(success && {
+          bgcolor: green[500],
+          '&:hover': {
+          bgcolor: green[700],
+          },
+      }),
     };
 
-    React.useEffect(() => {
-        return () => {
-            clearTimeout(timer.current);
-        };
-    }, []);
+    // React.useEffect(() => {
+    //     return () => {
+    //     };
+    // }, []);
 
     const handleButtonClick = () => {
-        if (!loading) {
-            setSuccess(false);
-            setLoading(true);
-            axios.put<VerifyUserReq>("http://localhost:8080/verifyUser?",
-                JSON.stringify({username: username_val, secret_code: secret_code_val}), config)
-                .then(res => {
-                    const response : any = res.
-                    if (response instanceof Error){
-                        // setLoad(true)
-                    }
-                })
-                .catch(error => {
-                    console.log(error)
-                })
-        }
-    };
-    
-    
-    
-    const verifyQueryParams = () => {
+      console.log("handleButtonClick")
+      if (!loading) {
         const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            }
+          headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+          }
         }
         const username_val = searchParams.get("username")
         const secret_code_val = searchParams.get("secret_code")
-
-
-    }
+        console.log("Username: ", username_val)
+        console.log("Secret_Code: ", secret_code_val)
+        setSuccess(false);
+        setLoading(true);
+        axios.put<VerifyUserReq>("http://localhost:8080/verifyUser?",
+          JSON.stringify({username: username_val, secret_code: secret_code_val}), config)
+          .then(res => {
+                console.log(res.data)
+                setLoading(false)
+                setSuccess(true)
+  
+          })
+          .catch(error => {
+              setSuccess(false)
+              console.log(error)
+          })
+      }
+    };
+    
 
 
     return (

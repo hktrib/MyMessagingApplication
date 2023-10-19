@@ -29,6 +29,7 @@ Table verify_emails as VE {
         id          [pk]
         username 
         email
+        secret_code
     } 
 }
 
